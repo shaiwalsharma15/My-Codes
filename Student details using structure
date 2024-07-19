@@ -2,19 +2,38 @@
 #include <string.h>
 
 struct myStudent {
-    char studentName[30];
+    char studentName[50];
     long studentId;
-    char studentCourse[20];
+    char studentCourse[40];
 };
  int main()
  {
      struct myStudent s1;
      strcpy (s1.studentName,"Shaiwal Sharma");
      s1.studentId = 22131010081;
-     strcpy (s1.studentCourse, "B.tech");
+     strcpy (s1.studentCourse, "B.tech (Computer science)");
  
+     struct myStudent s2;
+     strcpy (s2.studentName,"Prayas Sharma");
+     s2.studentId = 22131010445;
+     strcpy (s2.studentCourse, "B.tech(mechanical)");
+     
+     struct myStudent s3;
+     strcpy (s3.studentName,"Prabal Sharma");
+     s3.studentId = 22131010001;
+     strcpy (s3.studentCourse, "B.tech(civil)");
+     
  printf("Student name is %s\n" ,s1.studentName);
  printf("Student id is %lu\n", s1.studentId);
- printf("Student course is %s\n",s1.studentCourse);
+ printf("Student course is %s\n\n",s1.studentCourse);
+ 
+ printf("Student name is %s\n" ,s2.studentName);
+ printf("Student id is %lu\n", s2.studentId);
+ printf("Student course is %s\n\n",s2.studentCourse);
+ 
+ printf("Student name is %s\n" ,s3.studentName);
+ printf("Student id is %lu\n", s3.studentId);
+ printf("Student course is %s\n\n",s3.studentCourse);
+ 
  return 0;
  }
