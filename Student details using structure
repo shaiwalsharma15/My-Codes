@@ -1,0 +1,20 @@
+#include <stdio.h>
+#include <string.h>
+
+struct myStudent {
+    char studentName[30];
+    long studentId;
+    char studentCourse[20];
+};
+ int main()
+ {
+     struct myStudent s1;
+     strcpy (s1.studentName,"Shaiwal Sharma");
+     s1.studentId = 22131010081;
+     strcpy (s1.studentCourse, "B.tech");
+ 
+ printf("Student name is %s\n" ,s1.studentName);
+ printf("Student id is %lu\n", s1.studentId);
+ printf("Student course is %s\n",s1.studentCourse);
+ return 0;
+ }
