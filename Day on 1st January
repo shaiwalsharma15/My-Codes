@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+int main() {
+int i,year, r, d=0;
+printf("enter any year after 1900\n");
+scanf("%d", &year);
+for (i=1900; i<year ; i++){
+    if ((i%4==0 && i%100!=0) || (i%400==0)){
+    d=d+366;
+   } 
+   else{
+    d=d+365;
+    }
+}
+r=d%7;
+if (r==0)
+printf("The day on 1st January is Monday.\n");
+else if (r==1)
+printf("The day on 1st January is tuesday.\n");
+else if (r==2)
+printf("The day on 1st January is wednesday.\n");
+else if (r==3)
+printf("The day on 1st January is thrusday.\n");
+else if (r==4)
+printf("The day on 1st January is friday.\n");
+else if (r==5)
+printf("The day on 1st January is saturday.\n");
+else if (r==6)
+printf("The day on 1st January is sunday.\n");
+
+    return 0;
+}
