@@ -1,0 +1,692 @@
+For EfficientNetB7 
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from tensorflow.keras.applications import EfficientNetB7
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Constants
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
+EPOCHS = 10
+LEARNING_RATE = 0.001
+NUM_CLASSES = 7  
+
+# Dataset path
+image_dir = '/content/skin_cancer_dataset/organized_images/'
+
+# Data Generators
+datagen = ImageDataGenerator(
+    rescale=1.0 / 255,
+    rotation_range=30,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    vertical_flip=True,
+    validation_split=0.2
+)
+
+train_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='training'
+)
+
+val_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='validation'
+)
+
+# Build EfficientNetB7 Model
+base_model = EfficientNetB7(weights='imagenet', include_top=False, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))
+base_model.trainable = False  
+model = Sequential([
+    base_model,
+    GlobalAveragePooling2D(),
+    Dropout(0.3),
+    Dense(128, activation='relu'),
+    Dropout(0.2),
+    Dense(NUM_CLASSES, activation='softmax')
+])
+
+# Compile the Model
+model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the Model
+history = model.fit(
+    train_generator,
+    validation_data=val_generator,
+    epochs=EPOCHS,
+    verbose=1
+)
+
+# Save the Model
+model.save('EfficientNetB7_skin_cancer_model.h5')
+
+# Evaluate the Model
+val_generator.reset()
+predictions = model.predict(val_generator, verbose=1)
+y_pred = np.argmax(predictions, axis=1)
+y_true = val_generator.classes
+
+# Classification Report
+class_labels = list(val_generator.class_indices.keys())
+report = classification_report(y_true, y_pred, target_names=class_labels)
+print(report)
+
+# Confusion Matrix
+conf_matrix = confusion_matrix(y_true, y_pred)
+
+# Plot Confusion Matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=class_labels, yticklabels=class_labels)
+plt.title('Confusion Matrix (EfficientNetB7)')
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.show()
+
+# Plot Training and Validation Loss
+plt.figure(figsize=(10, 6))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.title('Training and Validation Loss (EfficientNetB7)')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
+
+
+
+
+For MobileNetV2
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Constants
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
+EPOCHS = 10
+LEARNING_RATE = 0.001
+NUM_CLASSES = 7  
+
+# Dataset path
+image_dir = '/content/skin_cancer_dataset/organized_images/'
+
+# Data Generators
+datagen = ImageDataGenerator(
+    rescale=1.0 / 255,
+    rotation_range=30,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    vertical_flip=True,
+    validation_split=0.2
+)
+
+train_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='training'
+)
+
+val_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='validation'
+)
+
+# Build MobileNetV2 Model
+base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))
+base_model.trainable = False  
+
+model = Sequential([
+    base_model,
+    GlobalAveragePooling2D(),
+    Dropout(0.3),
+    Dense(128, activation='relu'),
+    Dropout(0.2),
+    Dense(NUM_CLASSES, activation='softmax')
+])
+
+# Compile the Model
+model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the Model
+history = model.fit(
+    train_generator,
+    validation_data=val_generator,
+    epochs=EPOCHS,
+    verbose=1
+)
+
+# Save the Model
+model.save('MobileNetV2_skin_cancer_model.h5')
+
+# Evaluate the Model
+val_generator.reset()
+predictions = model.predict(val_generator, verbose=1)
+y_pred = np.argmax(predictions, axis=1)
+y_true = val_generator.classes
+
+# Classification Report
+class_labels = list(val_generator.class_indices.keys())
+report = classification_report(y_true, y_pred, target_names=class_labels)
+print(report)
+
+# Confusion Matrix
+conf_matrix = confusion_matrix(y_true, y_pred)
+
+# Plot Confusion Matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=class_labels, yticklabels=class_labels)
+plt.title('Confusion Matrix (MobileNetV2)')
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.show()
+
+# Plot Training and Validation Loss
+plt.figure(figsize=(10, 6))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.title('Training and Validation Loss (MobileNetV2)')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+For Xception
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from tensorflow.keras.applications import Xception
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Constants
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
+EPOCHS = 10
+LEARNING_RATE = 0.001
+NUM_CLASSES = 7  
+
+# Dataset path
+image_dir = '/content/skin_cancer_dataset/organized_images/'
+
+# Data Generators
+datagen = ImageDataGenerator(
+    rescale=1.0 / 255,
+    rotation_range=30,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    vertical_flip=True,
+    validation_split=0.2
+)
+
+train_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='training'
+)
+
+val_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='validation'
+)
+
+# Build Xception Model
+base_model = Xception(weights='imagenet', include_top=False, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))
+base_model.trainable = False  
+
+model = Sequential([
+    base_model,
+    GlobalAveragePooling2D(),
+    Dropout(0.3),
+    Dense(128, activation='relu'),
+    Dropout(0.2),
+    Dense(NUM_CLASSES, activation='softmax')
+])
+
+# Compile the Model
+model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the Model
+history = model.fit(
+    train_generator,
+    validation_data=val_generator,
+    epochs=EPOCHS,
+    verbose=1
+)
+
+# Save the Model
+model.save('Xception_skin_cancer_model.h5')
+
+# Evaluate the Model
+val_generator.reset()
+predictions = model.predict(val_generator, verbose=1)
+y_pred = np.argmax(predictions, axis=1)
+y_true = val_generator.classes
+
+# Classification Report
+class_labels = list(val_generator.class_indices.keys())
+report = classification_report(y_true, y_pred, target_names=class_labels)
+print(report)
+
+# Confusion Matrix
+conf_matrix = confusion_matrix(y_true, y_pred)
+
+# Plot Confusion Matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=class_labels, yticklabels=class_labels)
+plt.title('Confusion Matrix (Xception)')
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.show()
+
+# Plot Training and Validation Loss
+plt.figure(figsize=(10, 6))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.title('Training and Validation Loss (Xception)')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
+
+
+
+For  ResNet152
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from tensorflow.keras.applications import ResNet152
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Constants
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
+EPOCHS = 10
+LEARNING_RATE = 0.001
+NUM_CLASSES = 7  
+
+# Dataset path
+image_dir = '/content/skin_cancer_dataset/organized_images/'
+
+# Data Generators
+datagen = ImageDataGenerator(
+    rescale=1.0 / 255,
+    rotation_range=30,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    vertical_flip=True,
+    validation_split=0.2
+)
+
+train_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='training'
+)
+
+val_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='validation'
+)
+
+# Build ResNet152 Model
+base_model = ResNet152(weights='imagenet', include_top=False, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))
+base_model.trainable = False  
+
+model = Sequential([
+    base_model,
+    GlobalAveragePooling2D(),
+    Dropout(0.3),
+    Dense(128, activation='relu'),
+    Dropout(0.2),
+    Dense(NUM_CLASSES, activation='softmax')
+])
+
+# Compile the Model
+model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the Model
+history = model.fit(
+    train_generator,
+    validation_data=val_generator,
+    epochs=EPOCHS,
+    verbose=1
+)
+
+# Save the Model
+model.save('ResNet152_skin_cancer_model.h5')
+
+# Evaluate the Model
+val_generator.reset()
+predictions = model.predict(val_generator, verbose=1)
+y_pred = np.argmax(predictions, axis=1)
+y_true = val_generator.classes
+
+# Classification Report
+class_labels = list(val_generator.class_indices.keys())
+report = classification_report(y_true, y_pred, target_names=class_labels)
+print(report)
+
+# Confusion Matrix
+conf_matrix = confusion_matrix(y_true, y_pred)
+
+# Plot Confusion Matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=class_labels, yticklabels=class_labels)
+plt.title('Confusion Matrix (ResNet152)')
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.show()
+
+# Plot Training and Validation Loss
+plt.figure(figsize=(10, 6))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.title('Training and Validation Loss (ResNet152)')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+For  VGG19
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from tensorflow.keras.applications import VGG19
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Constants
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
+EPOCHS = 10
+LEARNING_RATE = 0.001
+NUM_CLASSES = 7  
+
+# Dataset path
+image_dir = '/content/skin_cancer_dataset/organized_images/'
+
+# Data Generators
+datagen = ImageDataGenerator(
+    rescale=1.0 / 255,
+    rotation_range=30,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    vertical_flip=True,
+    validation_split=0.2
+)
+
+train_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='training'
+)
+
+val_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='validation'
+)
+
+# Build VGG19 Model
+base_model = VGG19(weights='imagenet', include_top=False, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))
+base_model.trainable = False  
+
+model = Sequential([
+    base_model,
+    GlobalAveragePooling2D(),
+    Dropout(0.3),
+    Dense(128, activation='relu'),
+    Dropout(0.2),
+    Dense(NUM_CLASSES, activation='softmax')
+])
+
+# Compile the Model
+model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the Model
+history = model.fit(
+    train_generator,
+    validation_data=val_generator,
+    epochs=EPOCHS,
+    verbose=1
+)
+
+# Save the Model
+model.save('VGG19_skin_cancer_model.h5')
+
+# Evaluate the Model
+val_generator.reset()
+predictions = model.predict(val_generator, verbose=1)
+y_pred = np.argmax(predictions, axis=1)
+y_true = val_generator.classes
+
+# Classification Report
+class_labels = list(val_generator.class_indices.keys())
+report = classification_report(y_true, y_pred, target_names=class_labels)
+print(report)
+
+# Confusion Matrix
+conf_matrix = confusion_matrix(y_true, y_pred)
+
+# Plot Confusion Matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=class_labels, yticklabels=class_labels)
+plt.title('Confusion Matrix (VGG19)')
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.show()
+
+# Plot Training and Validation Loss
+plt.figure(figsize=(10, 6))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.title('Training and Validation Loss (VGG19)')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
+
+
+For DenseNet201
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from tensorflow.keras.applications import DenseNet201
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Constants
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
+EPOCHS = 10
+LEARNING_RATE = 0.001
+NUM_CLASSES = 7  
+
+# Dataset path
+image_dir = '/content/skin_cancer_dataset/organized_images/'
+
+# Data Generators
+datagen = ImageDataGenerator(
+    rescale=1.0 / 255,
+    rotation_range=30,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    vertical_flip=True,
+    validation_split=0.2
+)
+
+train_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='training'
+)
+
+val_generator = datagen.flow_from_directory(
+    image_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='validation'
+)
+
+# Build DenseNet201 Model
+base_model = DenseNet201(weights='imagenet', include_top=False, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))
+base_model.trainable = False  
+
+model = Sequential([
+    base_model,
+    GlobalAveragePooling2D(),
+    Dropout(0.3),
+    Dense(128, activation='relu'),
+    Dropout(0.2),
+    Dense(NUM_CLASSES, activation='softmax')
+])
+
+# Compile the Model
+model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the Model
+history = model.fit(
+    train_generator,
+    validation_data=val_generator,
+    epochs=EPOCHS,
+    verbose=1
+)
+
+# Save the Model
+model.save('DenseNet201_skin_cancer_model.h5')
+
+# Evaluate the Model
+val_generator.reset()
+predictions = model.predict(val_generator, verbose=1)
+y_pred = np.argmax(predictions, axis=1)
+y_true = val_generator.classes
+
+# Classification Report
+class_labels = list(val_generator.class_indices.keys())
+report = classification_report(y_true, y_pred, target_names=class_labels)
+print(report)
+
+# Confusion Matrix
+conf_matrix = confusion_matrix(y_true, y_pred)
+
+# Plot Confusion Matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=class_labels, yticklabels=class_labels)
+plt.title('Confusion Matrix (DenseNet201)')
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.show()
+
+# Plot Training and Validation Loss
+plt.figure(figsize=(10, 6))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.title('Training and Validation Loss (DenseNet201)')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
+
+
+
